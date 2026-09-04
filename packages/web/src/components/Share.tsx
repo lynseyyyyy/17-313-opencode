@@ -12,30 +12,25 @@ import { Part, ProviderIcon } from "./share/part"
 
 type MessageWithParts = MessageV2.Info & { parts: MessageV2.Part[] }
 
-type Status = "disconnected" | "connecting" | "connected" | "error" | "reconnecting"
+export type Status = "disconnected" | "connecting" | "connected" | "error" | "reconnecting"
+
+export function getStatusText(status: [Status, string?], messages: Record<string, string>): string {
+  const statusMessages: Record<Status, string> = {
+    connected: messages.status_connected_waiting,
+    connecting: messages.status_connecting,
+    disconnected: messages.status_disconnected,
+    reconnecting: messages.status_reconnecting,
+    error: status[1] || messages.status_error,
+  }
+
+  return statusMessages[status[0]] ?? messages.status_unknown
+}
 
 function scrollToAnchor(id: string) {
   const el = document.getElementById(id)
   if (!el) return
 
   el.scrollIntoView({ behavior: "smooth" })
-}
-
-function getStatusText(status: [Status, string?], messages: Record<string, string>): string {
-  switch (status[0]) {
-    case "connected":
-      return messages.status_connected_waiting
-    case "connecting":
-      return messages.status_connecting
-    case "disconnected":
-      return messages.status_disconnected
-    case "reconnecting":
-      return messages.status_reconnecting
-    case "error":
-      return status[1] || messages.status_error
-    default:
-      return messages.status_unknown
-  }
 }
 
 export default function Share(props: {
